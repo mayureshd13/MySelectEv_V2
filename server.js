@@ -10,6 +10,8 @@ const Station = require("./models/Station");
 const EV = require("./models/EV");
 const { timeLog } = require("console");
 const { title } = require("process");
+require('dotenv').config();
+
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
