@@ -764,7 +764,7 @@
           return;
         }
     
-        const response = await fetch('http://localhost:8080/stations');
+        const response = await fetch('https://select-ev.onrender.com/stations');
         if (!response.ok) throw new Error('Network response was not ok');
         
         stationsData = await response.json();
