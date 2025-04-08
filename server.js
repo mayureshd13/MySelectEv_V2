@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const path = require("path");
 
 const app = express();
-const port = 8080;
+const port = process.env.PORT || 8080;
 
 const State = require("./models/State");
 const Station = require("./models/Station");
