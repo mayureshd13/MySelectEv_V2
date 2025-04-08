@@ -672,7 +672,7 @@
           return;
       }
   
-        const response = await fetch('http://localhost:8080/states');
+        const response = await fetch('https://select-ev.onrender.com/states');
         if (response.ok) {
           stateData = await response.json();
           localStorage.setItem(cacheKey, JSON.stringify(stateData));

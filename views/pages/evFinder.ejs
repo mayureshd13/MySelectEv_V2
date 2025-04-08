@@ -1285,7 +1285,7 @@
           async function fetchEVs() {
             try {
               showLoading();
-              const response = await fetch('http://localhost:8080/evs');
+              const response = await fetch('https://select-ev.onrender.com/evs');
               if (!response.ok) {
                 throw new Error('Failed to fetch EVs');
               }
