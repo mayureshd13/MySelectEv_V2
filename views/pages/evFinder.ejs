@@ -1,0 +1,1842 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>SelectEV - EV Finder & Comparison</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* Dark Mode Styles */
+    .dark-mode {
+      background-color: #121212;
+      color: #e0e0e0;
+    }
+
+    .dark-mode .hero {
+      background: linear-gradient(135deg, #1a1a1a 0%, #003820 100%) !important;
+    }
+
+    .dark-mode .filter-section {
+      background: #223243;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    .dark-mode .filter-group-title{
+      color: #00c7b0;
+    }
+    .dark-mode .filter-section h3 {
+      color: #f0f0f0;
+    }
+
+    .dark-mode .range-slider {
+      background: #444;
+    }
+
+    .dark-mode .range-slider::-webkit-slider-thumb {
+      background: #00dfc4;
+      border: 3px solid #2d2d2d;
+    }
+
+    .dark-mode #min-price-value,
+    .dark-mode #max-price-value,
+    .dark-mode #range-value,
+    .dark-mode #speed-value,
+    .dark-mode #warranty-value {
+      background-color: #333;
+      color: #e0e0e0;
+    }
+
+    .dark-mode .category-btn:not(.active) {
+      background-color: #2d2d2d;
+      color: #e0e0e0;
+      border: 1px solid #444;
+    }
+
+    .dark-mode .category-btn:not(.active):hover {
+      background-color: #3d3d3d;
+    }
+
+    .dark-mode #reset-filters {
+      background-color: #2d2d2d;
+      color: #e0e0e0;
+      border: 1px solid #444;
+    }
+
+    .dark-mode #apply-filters {
+      background-color: #00dfc4;
+      color: #1a1a1a;
+    }
+
+    .dark-mode .ev-card {
+      background-color: #1e1e1e;
+      border: 1px solid #333;
+    }
+
+    .dark-mode .ev-card h3 {
+      color: #f0f0f0;
+    }
+
+    .dark-mode .ev-card p {
+      color: #b0b0b0;
+    }
+
+    .dark-mode .ev-card .text-gray-500 {
+      color: #888 !important;
+    }
+
+    .dark-mode .ev-card .text-gray-800 {
+      color: #f0f0f0 !important;
+    }
+
+    .dark-mode .ev-card .border-gray-100 {
+      border-color: #333 !important;
+    }
+
+    .dark-mode .no-results {
+      background-color: #1e1e1e;
+      border: 1px solid #333;
+    }
+
+    .dark-mode .no-results h4 {
+      color: #f0f0f0;
+    }
+
+    .dark-mode select {
+      background-color: #2d2d2d;
+      color: #e0e0e0;
+      border-color: #444;
+    }
+
+    .dark-mode select:focus {
+      border-color: #00dfc4;
+    }
+
+    .dark-mode .text-gray-700 {
+      color: #b0b0b0 !important;
+    }
+
+    .dark-mode .text-gray-800 {
+      color: #f0f0f0 !important;
+    }
+
+    .dark-mode .text-gray-200 {
+      color: #b0b0b0 !important;
+    }
+
+    .dark-mode .text-xl {
+      color: white;
+    }
+
+    .dark-mode .bg-gray-50 {
+      background-color: #121212 !important;
+    }
+
+    .dark-mode .bg-white {
+      background-color: #1e1e1e !important;
+    }
+
+    .dark-mode .bg-gray-100 {
+      background-color: #2d2d2d !important;
+    }
+
+    .dark-mode .hover\:bg-gray-200:hover {
+      background-color: #3d3d3d !important;
+    }
+
+    .dark-mode .border-gray-300 {
+      border-color: #444 !important;
+    }
+
+    /* Dark mode toggle button (add this to your HTML) */
+    .dark-mode-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+      background: #2d2d2d;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .dark-mode-toggle:hover {
+      transform: scale(1.1);
+    }
+
+    .dark-mode-toggle svg {
+      width: 24px;
+      height: 24px;
+      color: #e0e0e0;
+    }
+
+    /* Animation and Base Styles */
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideIn {
+      0% {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    /* Filter Section Styles */
+    .filter-section {
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 1024px) {
+      .filter-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .filter-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .filter-group-title {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #4b5563;
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+
+    /* Improved Range Slider Styling */
+    .range-slider-container {
+      margin-bottom: 1.5rem;
+    }
+
+    .range-slider-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+
+    .range-slider-value {
+      font-size: 0.875rem;
+      font-weight: 500;
+      background-color: #f3f4f6;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .range-slider {
+      width: 100%;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: #d3d3d3;
+      border-radius: 3px;
+      outline: none;
+      margin: 0.5rem 0 1rem;
+    }
+
+    .range-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #00dfc4;
+      cursor: pointer;
+      border: 3px solid white;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Improved Price Range Slider */
+    .price-range-wrapper {
+      position: relative;
+      height: 40px;
+    }
+
+    .price-range-slider {
+      position: absolute;
+      width: 100%;
+      height: 6px;
+      pointer-events: none;
+    }
+    #min-price {
+      z-index: 2;
+      background: transparent;
+    }
+
+    #max-price {
+      z-index: 1;
+    }
+
+    /* Improved Category Buttons */
+    .category-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+    }
+
+    .category-btn {
+      padding: 0.625rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      border: 1px solid #e5e7eb;
+      background-color: white;
+      cursor: pointer;
+    }
+
+    .category-btn.active {
+      background-color: #00dfc4;
+      color: white;
+      border-color: #00dfc4;
+    }
+
+    .category-btn:not(.active):hover {
+      background-color: #f3f4f6;
+    }
+
+    /* Improved Filter Action Buttons */
+    .filter-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      grid-column: 1 / -1;
+    }
+
+    .filter-action-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+
+    #reset-filters {
+      background-color: #f3f4f6;
+      color: #4b5563;
+      border: 1px solid #e5e7eb;
+    }
+
+    #apply-filters {
+      background-color: #00dfc4;
+      color: #223243;
+      font-weight: 600;
+      border: none;
+    }
+
+    /* Improved Compare Checkbox */
+    .compare-checkbox {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 20px;
+      height: 20px;
+      z-index: 2;
+      accent-color: #00dfc4;
+      cursor: pointer;
+    }
+
+    /* Responsive Adjustments */
+    @media (min-width: 768px) {
+      .range-slider {
+        height: 8px;
+      }
+
+      .range-slider::-webkit-slider-thumb {
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    /* SVG Fixes */
+    svg {
+      width: 1em;
+      height: 1em;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .feature-icon {
+      width: 1rem;
+      height: 1rem;
+      margin-right: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .filter-section>div {
+        grid-template-columns: 1fr !important;
+      }
+
+      .category-buttons {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .results-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .filter-btn,
+      .category-btn,
+      .view-details-btn {
+        padding: 0.625rem 1.25rem;
+        font-size: 1rem;
+      }
+    }
+
+    /* Search input */
+    .search-container {
+      margin-bottom: 1.5rem;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+
+    .search-input:focus {
+      outline: none;
+      border-color: #00dfc4;
+      box-shadow: 0 0 0 3px rgba(0, 223, 196, 0.2);
+    }
+
+    /* Popup styles */
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .popup-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .popup-content {
+      background-color: white;
+      border-radius: 1rem;
+      width: 90%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 2rem;
+      transform: translateY(20px);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .popup-overlay.active .popup-content {
+      transform: translateY(0);
+    }
+
+    .popup-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #6b7280;
+    }
+
+    .popup-close:hover {
+      color: #374151;
+    }
+
+    .popup-header {
+      display: flex;
+      flex-direction: row;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .popup-image {
+      width: 40%;
+      border-radius: 0.5rem;
+      object-fit: contain;
+      max-height: 300px;
+    }
+
+    .popup-details {
+      flex: 1;
+    }
+
+    @media (max-width: 768px) {
+      .popup-header {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .popup-image {
+        width: 100% !important;
+        height: auto;
+        max-height: 250px;
+        margin-bottom: 1rem;
+      }
+      
+      .popup-features {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .popup-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #223243;
+    }
+
+    .popup-subtitle {
+      color: #6b7280;
+      margin-bottom: 1rem;
+    }
+
+    .popup-features {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+    }
+
+    .feature-icon {
+      width: 1.5rem;
+      height: 1.5rem;
+      margin-right: 0.5rem;
+      color: #00dfc4;
+    }
+
+    .feature-label {
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+
+    .feature-value {
+      font-weight: 600;
+      color: #223243;
+    }
+
+    .popup-description {
+      color: #4b5563;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .popup-price {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #223243;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Dark mode adjustments */
+    .dark-mode .popup-content {
+      background-color: #1e1e1e;
+    }
+
+    .dark-mode .popup-title,
+    .dark-mode .feature-value,
+    .dark-mode .popup-price {
+      color: #f0f0f0;
+    }
+
+    .dark-mode .popup-subtitle,
+    .dark-mode .feature-label,
+    .dark-mode .popup-description {
+      color: #b0b0b0;
+    }
+
+    .dark-mode .popup-close {
+      color: #b0b0b0;
+    }
+
+    .dark-mode .popup-close:hover {
+      color: #f0f0f0;
+    }
+
+    /* Card Styles */
+    .ev-card {
+      background: white;
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e5e7eb;
+      transition: all 0.3s ease;
+    }
+
+    .ev-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 223, 196, 0.1);
+    }
+
+    .ev-card.selected {
+      border: 2px solid #00dfc4;
+    }
+
+    .ev-card-img-container {
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      position: relative;
+      background-color: #f8f9fa;
+    }
+
+    .ev-card-img {
+      max-height: 100%;
+      max-width: 100%;
+      object-fit: contain;
+    }
+
+    .ev-card-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: white;
+    }
+
+    .badge-commuter {
+      background-color: #3b82f6;
+    }
+
+    .badge-scooter {
+      background-color: #10b981;
+    }
+
+    .badge-bike {
+      background-color: #f59e0b;
+    }
+
+    .badge-car {
+      background-color: #ef4444;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .feature-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .feature-label {
+      font-size: 0.75rem;
+      color: #6b7280;
+      margin-bottom: 0.25rem;
+    }
+
+    .feature-value {
+      font-weight: 600;
+      color: #223243;
+    }
+
+    /* Button Styles */
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background-color: #00dfc4;
+      color: #223243;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background-color: #00c7b0;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background-color: #f3f4f6;
+      color: #4b5563;
+      border: 1px solid #e5e7eb;
+    }
+
+    .btn-secondary:hover {
+      background-color: #e5e7eb;
+    }
+
+    /* Action Buttons Container */
+    .action-buttons {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    .action-buttons .btn {
+      flex: 1;
+    }
+
+    /* Compare Actions */
+    .compare-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 1.5rem 0;
+      padding: 1rem;
+      background-color: #f8fafc;
+      border-radius: 8px;
+    }
+
+    .compare-count {
+      font-weight: 600;
+      color: #00dfc4;
+    }
+
+    /* Comparison Table */
+    .comparison-section {
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid #e5e7eb;
+      margin-bottom: 1rem;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1.5rem;
+    }
+
+    .comparison-table th {
+      background-color: #f3f4f6;
+      padding: 0.75rem;
+      text-align: left;
+      font-weight: 600;
+      color: #223243;
+    }
+
+    .comparison-table td {
+      padding: 0.75rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .winner-cell {
+      background-color: rgba(0, 223, 196, 0.1);
+      font-weight: 600;
+    }
+
+    /* Loading Spinner */
+    .loading-spinner {
+      display: none;
+      width: 50px;
+      height: 50px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #00dfc4;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* No Results */
+    .no-results {
+      text-align: center;
+      padding: 3rem;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .no-results-icon {
+      font-size: 3rem;
+      color: #9ca3af;
+      margin-bottom: 1rem;
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 2rem;
+      gap: 0.5rem;
+    }
+
+    .page-btn {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      background-color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .page-btn:hover {
+      background-color: #f3f4f6;
+    }
+
+    .page-btn.active {
+      background-color: #00dfc4;
+      color: white;
+      border-color: #00dfc4;
+    }
+
+    .page-btn.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Dark mode adjustments */
+    .dark-mode .ev-card {
+      background-color: #1e1e1e;
+      border-color: #333;
+    }
+
+    .dark-mode .ev-card.selected {
+      border-color: #00dfc4;
+    }
+
+    .dark-mode .feature-value {
+      color: #f0f0f0;
+    }
+
+    .dark-mode .compare-actions {
+      background-color: #2d2d2d;
+    }
+
+    .dark-mode .comparison-table th {
+      background-color: #2d2d2d;
+      color: #f0f0f0;
+    }
+
+    .dark-mode .comparison-table td {
+      border-color: #444;
+    }
+
+    .dark-mode .winner-cell {
+      background-color: rgba(0, 223, 196, 0.2);
+    }
+
+    .dark-mode .no-results {
+      background-color: #1e1e1e;
+    }
+
+    .dark-mode .page-btn {
+      background-color: #2d2d2d;
+      border-color: #444;
+      color: #e0e0e0;
+    }
+
+    .dark-mode .page-btn:hover {
+      background-color: #3d3d3d;
+    }
+
+    .dark-mode .page-btn.active {
+      background-color: #00dfc4;
+      color: #1a1a1a;
+    }
+  </style>
+</head>
+
+<body class="font-['Poppins'] bg-gray-50">
+  <%-include("../partials/header.ejs") %>
+    <main class="pt-20 pb-12 px-4 md:px-8 max-w-7xl mx-auto">
+      <!-- Hero Section -->
+      <section
+        class="hero text-center py-16 md:py-20 bg-gradient-to-br from-[#223243] to-[#00663d] rounded-2xl shadow-2xl mb-12 mt-6 overflow-hidden relative">
+        <div
+          class="absolute inset-0 opacity-10 bg-[url('https://www.transparentpng.com/thumb/car-pattern/car-pattern-png-5.png')] bg-repeat bg-center">
+        </div>
+        <div class="relative z-10 px-4">
+          <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 animate-fadeIn mt-12">
+            <span class="gradient-text">EV Finder & Comparison</span>
+          </h2>
+          <p class="text-xl md:text-2xl text-gray-200 mb-6 max-w-3xl mx-auto animate-fadeIn animate-delay-100">
+            Discover and compare electric vehicles with our intelligent matching system
+          </p>
+        </div>
+      </section>
+
+      <!-- Search and Filter Section -->
+      <div class="search-container">
+        <input type="text" id="search-input" class="search-input" placeholder="Search EVs by name or brand...">
+      </div>
+
+      <section id="filter-section" class="filter-section">
+        <h3 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-[#00dfc4]" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          </svg>
+          Filter EVs
+        </h3>
+        
+        <div class="filter-grid">
+          <!-- Vehicle Type -->
+          <div class="filter-group">
+            <label class="filter-group-title">Vehicle Type</label>
+            <div class="category-buttons">
+              <button class="category-btn active" data-category="all">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+                All
+              </button>
+              <button class="category-btn" data-category="commuter">
+                Commuter
+              </button>
+              <button class="category-btn" data-category="scooter">
+                Scooter
+              </button>
+              <button class="category-btn" data-category="bike">
+                Bike
+              </button>
+              <button class="category-btn" data-category="car">
+                Car
+              </button>
+            </div>
+          </div>
+
+          <!-- Price Range -->
+          <div class="filter-group">
+            <label class="filter-group-title">Price Range (₹)</label>
+            <div class="range-slider-labels">
+              <span class="range-slider-value" id="min-price-value">50,000</span>
+              <span class="range-slider-value" id="max-price-value">50,00,000</span>
+            </div>
+            <div class="price-range-wrapper">
+              <input type="range" id="min-price" min="50000" max="5000000" value="50000" step="5000"
+                class="range-slider price-range-slider">
+              <input type="range" id="max-price" min="50000" max="5000000" value="5000000" step="5000"
+                class="range-slider price-range-slider">
+            </div>
+          </div>
+
+          <!-- Range -->
+          <div class="filter-group">
+            <label class="filter-group-title">Minimum Range (km)</label>
+            <div class="range-slider-labels">
+              <span class="range-slider-value" id="range-value">50 km</span>
+            </div>
+            <input type="range" id="range" min="50" max="500" value="50" step="10" class="range-slider">
+            <div class="range-slider-labels">
+              <span>50 km</span>
+              <span>500 km</span>
+            </div>
+          </div>
+
+          <!-- Top Speed -->
+          <div class="filter-group">
+            <label class="filter-group-title">Minimum Top Speed (km/h)</label>
+            <div class="range-slider-labels">
+              <span class="range-slider-value" id="speed-value">40 km/h</span>
+            </div>
+            <input type="range" id="top-speed" min="25" max="200" value="40" step="5" class="range-slider">
+            <div class="range-slider-labels">
+              <span>25 km/h</span>
+              <span>200 km/h</span>
+            </div>
+          </div>
+
+          <!-- Warranty -->
+          <div class="filter-group">
+            <label class="filter-group-title">Minimum Warranty (years)</label>
+            <div class="range-slider-labels">
+              <span class="range-slider-value" id="warranty-value">2 yrs</span>
+            </div>
+            <input type="range" id="warranty" min="1" max="8" value="2" step="0.5" class="range-slider">
+            <div class="range-slider-labels">
+              <span>1 yr</span>
+              <span>8 yrs</span>
+            </div>
+          </div>
+
+          <!-- Empty div for grid alignment -->
+          <div></div>
+
+          <div class="filter-actions">
+            <button id="reset-filters" class="filter-action-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Reset
+            </button>
+            <button id="apply-filters" class="filter-action-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              Apply
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Compare Actions -->
+      <div class="compare-actions" id="compare-actions">
+        <div class="compare-count">
+          <span id="selected-count">0</span> EVs selected for comparison
+        </div>
+        <button id="compare-selected" class="btn btn-primary" disabled>
+          Compare Selected EVs
+        </button>
+      </div>
+
+      <!-- Results Section -->
+      <section class="results mb-16">
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+          <h3 class="text-2xl font-bold text-gray-800">
+            <span id="results-count">0</span> EVs Found
+          </h3>
+          <div class="flex items-center gap-4">
+            <div class="flex items-center">
+              <label for="sort-by" class="text-sm font-medium text-gray-700 mr-2 whitespace-nowrap">Sort by:</label>
+              <select id="sort-by"
+                class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00dfc4] focus:border-transparent appearance-none bg-white pr-8">
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
+                <option value="range-asc">Range: Low to High</option>
+                <option value="range-desc">Range: High to Low</option>
+                <option value="speed-asc">Speed: Low to High</option>
+                <option value="speed-desc">Speed: High to Low</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loading-spinner" class="loading-spinner"></div>
+
+        <!-- No Results Message -->
+        <div id="no-results" class="no-results" style="display: none;">
+          <svg xmlns="http://www.w3.org/2000/svg" class="no-results-icon" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <h4 class="text-2xl font-bold text-gray-700 mb-3">No matching EVs found</h4>
+          <p class="text-gray-500 mb-6 max-w-md mx-auto">We couldn't find any vehicles that match your current filters.
+            Try adjusting your criteria.</p>
+          <button id="reset-no-results" class="btn btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            Reset All Filters
+          </button>
+        </div>
+
+        <!-- Results Grid -->
+        <div id="results-grid" class="results-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- EV cards will be dynamically inserted here -->
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination">
+          <!-- Pagination buttons will be added here -->
+        </div>
+      </section>
+
+      <!-- Comparison Section -->
+      <section class="comparison-section" id="comparison-section" >
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Comparison Results</h2>
+        <div class="overflow-x-auto">
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th id="compare-header-1"></th>
+                <th id="compare-header-2"></th>
+                <th id="compare-header-3"></th>
+              </tr>
+            </thead>
+            <tbody id="comparison-body">
+              <!-- Comparison rows will be added here -->
+            </tbody>
+          </table>
+        </div>
+        <button id="reset-comparison" class="btn btn-secondary mt-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-2" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Reset Comparison
+        </button>
+      </section>
+
+      <!-- Vehicle Details Popup -->
+      <div class="popup-overlay" id="popup">
+        <div class="popup-content">
+          <button class="popup-close" id="popup-close">&times;</button>
+          <div class="popup-header">
+            <img src="" alt="EV Image" class="popup-image" id="popup-image">
+            <div class="popup-details">
+              <h2 class="popup-title" id="popup-title"></h2>
+              <p class="popup-subtitle" id="popup-subtitle"></p>
+              <div class="popup-features">
+                <div class="feature-item">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="feature-icon" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                  <div>
+                    <div class="feature-label">Range</div>
+                    <div class="feature-value" id="popup-range"></div>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="feature-icon" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  <div>
+                    <div class="feature-label">Top Speed</div>
+                    <div class="feature-value" id="popup-speed"></div>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="feature-icon" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div>
+                    <div class="feature-label">Charge Time</div>
+                    <div class="feature-value" id="popup-charge"></div>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="feature-icon" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                  <div>
+                    <div class="feature-label">Warranty</div>
+                    <div class="feature-value" id="popup-warranty"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="popup-price" id="popup-price"></div>
+            </div>
+          </div>
+          <div class="popup-description" id="popup-description"></div>
+        </div>
+      </div>
+    </main>
+    <%-include("../partials/footer.ejs") %>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', async function () {
+          // DOM Elements
+          const resultsGrid = document.getElementById('results-grid');
+          const resultsCount = document.getElementById('results-count');
+          const noResults = document.getElementById('no-results');
+          const resetNoResultsBtn = document.getElementById('reset-no-results');
+          const resetFiltersBtn = document.getElementById('reset-filters');
+          const applyFiltersBtn = document.getElementById('apply-filters');
+          const sortBy = document.getElementById('sort-by');
+          const loadingSpinner = document.getElementById('loading-spinner');
+          const searchInput = document.getElementById('search-input');
+          const selectedCount = document.getElementById('selected-count');
+          const compareSelectedBtn = document.getElementById('compare-selected');
+          const resetComparisonBtn = document.getElementById('reset-comparison');
+          const comparisonSection = document.getElementById('comparison-section');
+          const comparisonBody = document.getElementById('comparison-body');
+          const compareHeaders = [
+            document.getElementById('compare-header-1'),
+            document.getElementById('compare-header-2'),
+            document.getElementById('compare-header-3')
+          ];
+          const pagination = document.getElementById('pagination');
+
+          // Popup elements
+          const popup = document.getElementById('popup');
+          const popupClose = document.getElementById('popup-close');
+
+          // Range sliders
+          const minPriceSlider = document.getElementById('min-price');
+          const maxPriceSlider = document.getElementById('max-price');
+          const rangeSlider = document.getElementById('range');
+          const topSpeedSlider = document.getElementById('top-speed');
+          const warrantySlider = document.getElementById('warranty');
+
+          // Display values
+          const minPriceValue = document.getElementById('min-price-value');
+          const maxPriceValue = document.getElementById('max-price-value');
+          const rangeValue = document.getElementById('range-value');
+          const speedValue = document.getElementById('speed-value');
+          const warrantyValue = document.getElementById('warranty-value');
+
+          // Category buttons
+          const categoryButtons = document.querySelectorAll('.category-btn');
+
+          // Current state
+          let currentFilters = {
+            category: 'all',
+            minPrice: 50000,
+            maxPrice: 5000000,
+            range: 0,
+            topSpeed: 0,
+            warranty: 0,
+            searchQuery: ''
+          };
+          let currentSort = 'price-asc';
+          let allEVs = [];
+          let filteredEVs = [];
+          let selectedEVs = [];
+          let currentPage = 1;
+          const itemsPerPage = 9; // 3 columns x 3 rows
+
+          // Format currency
+          function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-IN', {
+              style: 'currency',
+              currency: 'INR',
+              maximumFractionDigits: 0
+            }).format(amount);
+          }
+
+          // Format category name
+          function formatCategory(category) {
+            return category.charAt(0).toUpperCase() + category.slice(1);
+          }
+
+          // Fetch EVs from API
+          async function fetchEVs() {
+            try {
+              showLoading();
+              const response = await fetch('http://localhost:8080/evs');
+              if (!response.ok) {
+                throw new Error('Failed to fetch EVs');
+              }
+              const data = await response.json();
+              allEVs = data;
+              filteredEVs = data;
+              return data;
+            } catch (error) {
+              console.error('Error fetching EVs:', error);
+              showPopup('Failed to load EV data. Please try again later.');
+              return [];
+            } finally {
+              hideLoading();
+            }
+          }
+
+          // Update slider display values
+          function updateSliderValues() {
+            minPriceValue.textContent = formatCurrency(currentFilters.minPrice);
+            maxPriceValue.textContent = formatCurrency(currentFilters.maxPrice);
+            rangeValue.textContent = currentFilters.range === 0 ? 'Any' : `${currentFilters.range} km`;
+            speedValue.textContent = currentFilters.topSpeed === 0 ? 'Any' : `${currentFilters.topSpeed} km/h`;
+            warrantyValue.textContent = currentFilters.warranty === 0 ? 'Any' : `${currentFilters.warranty} yrs`;
+          }
+
+          // Initialize sliders
+          function initSliders() {
+            minPriceSlider.value = currentFilters.minPrice;
+            maxPriceSlider.value = currentFilters.maxPrice;
+            rangeSlider.value = currentFilters.range;
+            topSpeedSlider.value = currentFilters.topSpeed;
+            warrantySlider.value = currentFilters.warranty;
+
+            updateSliderValues();
+
+            // Event listeners for sliders
+            minPriceSlider.addEventListener('input', function () {
+              currentFilters.minPrice = parseInt(this.value);
+              if (currentFilters.minPrice > currentFilters.maxPrice) {
+                currentFilters.maxPrice = currentFilters.minPrice;
+                maxPriceSlider.value = currentFilters.maxPrice;
+              }
+              updateSliderValues();
+            });
+
+            maxPriceSlider.addEventListener('input', function () {
+              currentFilters.maxPrice = parseInt(this.value);
+              if (currentFilters.maxPrice < currentFilters.minPrice) {
+                currentFilters.minPrice = currentFilters.maxPrice;
+                minPriceSlider.value = currentFilters.minPrice;
+              }
+              updateSliderValues();
+            });
+
+            rangeSlider.addEventListener('input', function () {
+              currentFilters.range = parseInt(this.value);
+              updateSliderValues();
+            });
+
+            topSpeedSlider.addEventListener('input', function () {
+              currentFilters.topSpeed = parseInt(this.value);
+              updateSliderValues();
+            });
+
+            warrantySlider.addEventListener('input', function () {
+              currentFilters.warranty = parseFloat(this.value);
+              updateSliderValues();
+            });
+          }
+
+          // Initialize category buttons
+          function initCategoryButtons() {
+            categoryButtons.forEach(button => {
+              button.addEventListener('click', function () {
+                categoryButtons.forEach(btn => {
+                  btn.classList.remove('active', 'bg-[#00dfc4]', 'text-white');
+                  btn.classList.add('bg-gray-100', 'hover:bg-gray-200');
+                });
+
+                this.classList.add('active', 'bg-[#00dfc4]', 'text-white');
+                this.classList.remove('bg-gray-100', 'hover:bg-gray-200');
+
+                currentFilters.category = this.dataset.category;
+              });
+            });
+          }
+
+          // Filter EVs based on current filters
+          function filterEVs(evs) {
+            return evs.filter(ev => {
+              // Search filter
+              if (currentFilters.searchQuery) {
+                const searchLower = currentFilters.searchQuery.toLowerCase();
+                const brandLower = ev.brand?.toLowerCase() || '';
+                const modelLower = ev.name.toLowerCase();
+                if (!brandLower.includes(searchLower) && !modelLower.includes(searchLower)) {
+                  return false;
+                }
+              }
+
+              // Category filter
+              if (currentFilters.category !== 'all' && ev.category !== currentFilters.category) {
+                return false;
+              }
+
+              // Price filter
+              if (ev.price < currentFilters.minPrice || ev.price > currentFilters.maxPrice) {
+                return false;
+              }
+
+              // Range filter
+              if (currentFilters.range > 0 && ev.range < currentFilters.range) {
+                return false;
+              }
+
+              // Top speed filter
+              if (currentFilters.topSpeed > 0 && ev.topSpeed < currentFilters.topSpeed) {
+                return false;
+              }
+
+              // Warranty filter
+              if (currentFilters.warranty > 0 && ev.warranty < currentFilters.warranty) {
+                return false;
+              }
+
+              return true;
+            });
+          }
+
+          // Sort EVs based on current sort
+          function sortEVs(filteredEVs) {
+            switch (currentSort) {
+              case 'price-asc':
+                return filteredEVs.sort((a, b) => a.price - b.price);
+              case 'price-desc':
+                return filteredEVs.sort((a, b) => b.price - a.price);
+              case 'range-asc':
+                return filteredEVs.sort((a, b) => a.range - b.range);
+              case 'range-desc':
+                return filteredEVs.sort((a, b) => b.range - a.range);
+              case 'speed-asc':
+                return filteredEVs.sort((a, b) => a.topSpeed - b.topSpeed);
+              case 'speed-desc':
+                return filteredEVs.sort((a, b) => b.topSpeed - a.topSpeed);
+              default:
+                return filteredEVs;
+            }
+          }
+
+          // Show loading state
+          function showLoading() {
+            loadingSpinner.style.display = 'block';
+            resultsGrid.style.opacity = '0.5';
+            resultsGrid.style.pointerEvents = 'none';
+          }
+
+          function hideLoading() {
+            loadingSpinner.style.display = 'none';
+            resultsGrid.style.opacity = '1';
+            resultsGrid.style.pointerEvents = 'auto';
+          }
+
+          // Show vehicle details popup
+          function showVehicleDetails(ev) {
+            const imageUrl = ev.image.startsWith('http') ? ev.image :
+              ev.image.startsWith('/') ? `${ev.image}` :
+                `${ev.image}`;
+
+            document.getElementById('popup-title').textContent = ev.name;
+            document.getElementById('popup-subtitle').textContent = ev.brand ? `${ev.brand} • ${ev.category}` : ev.category;
+            document.getElementById('popup-image').src = imageUrl;
+            document.getElementById('popup-image').alt = ev.name;
+            document.getElementById('popup-image').onerror = function () {
+              this.onerror = null;
+              this.src = '/ev_imgs/logosev.png';
+            };
+            document.getElementById('popup-range').textContent = `${ev.range} km`;
+            document.getElementById('popup-speed').textContent = `${ev.topSpeed} km/h`;
+            document.getElementById('popup-charge').textContent = `${ev.chargingTime} hours`;
+            document.getElementById('popup-warranty').textContent = `${ev.warranty} years`;
+            document.getElementById('popup-price').textContent = formatCurrency(ev.price);
+            document.getElementById('popup-description').textContent = ev.description;
+
+            popup.classList.add('active');
+            document.body.style.overflow = 'hidden';
+          }
+
+          // Close popup
+          function closePopup() {
+            popup.classList.remove('active');
+            document.body.style.overflow = 'auto';
+          }
+
+          // Toggle EV selection for comparison
+          function toggleEVSelection(ev) {
+            const index = selectedEVs.findIndex(e => e._id === ev._id);
+            if (index === -1) {
+              if (selectedEVs.length >= 3) {
+                alert('You can compare up to 3 EVs at a time.');
+                return;
+              }
+              selectedEVs.push(ev);
+            } else {
+              selectedEVs.splice(index, 1);
+            }
+            updateSelectedCount();
+            renderEVs(getPaginatedEVs());
+          }
+
+          // Update selected count display
+          function updateSelectedCount() {
+            selectedCount.textContent = selectedEVs.length;
+            compareSelectedBtn.disabled = selectedEVs.length < 2;
+          }
+
+          // Get paginated EVs
+          function getPaginatedEVs() {
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            return filteredEVs.slice(startIndex, endIndex);
+          }
+
+          // Render pagination buttons
+          function renderPagination() {
+            pagination.innerHTML = '';
+            const totalPages = Math.ceil(filteredEVs.length / itemsPerPage);
+            
+            if (totalPages <= 1) return;
+
+            // Previous button
+            const prevBtn = document.createElement('button');
+            prevBtn.className = `page-btn ${currentPage === 1 ? 'disabled' : ''}`;
+            prevBtn.innerHTML = '&laquo;';
+            prevBtn.addEventListener('click', () => {
+              if (currentPage > 1) {
+                currentPage--;
+                renderEVs(getPaginatedEVs());
+                renderPagination();
+              }
+            });
+            pagination.appendChild(prevBtn);
+
+            // Page buttons
+            for (let i = 1; i <= totalPages; i++) {
+              const pageBtn = document.createElement('button');
+              pageBtn.className = `page-btn ${currentPage === i ? 'active' : ''}`;
+              pageBtn.textContent = i;
+              pageBtn.addEventListener('click', () => {
+                currentPage = i;
+                renderEVs(getPaginatedEVs());
+                renderPagination();
+              });
+              pagination.appendChild(pageBtn);
+            }
+
+            // Next button
+            const nextBtn = document.createElement('button');
+            nextBtn.className = `page-btn ${currentPage === totalPages ? 'disabled' : ''}`;
+            nextBtn.innerHTML = '&raquo;';
+            nextBtn.addEventListener('click', () => {
+              if (currentPage < totalPages) {
+                currentPage++;
+                renderEVs(getPaginatedEVs());
+                renderPagination();
+              }
+            });
+            pagination.appendChild(nextBtn);
+          }
+
+          // Render EV cards
+          function renderEVs(evs) {
+            resultsGrid.innerHTML = '';
+
+            if (evs.length === 0) {
+              noResults.style.display = 'block';
+              resultsCount.textContent = '0';
+              pagination.innerHTML = '';
+              return;
+            }
+
+            noResults.style.display = 'none';
+            resultsCount.textContent = filteredEVs.length;
+
+            evs.forEach(ev => {
+              const isSelected = selectedEVs.some(selected => selected._id === ev._id);
+              const categoryClass = `badge-${ev.category}`;
+              const categoryName = formatCategory(ev.category);
+              const imageUrl = ev.image.startsWith('http') ? ev.image :
+                ev.image.startsWith('/') ? `${ev.image}` :
+                  `${ev.image}`;
+
+              const card = document.createElement('div');
+              card.className = `ev-card ${isSelected ? 'selected' : ''}`;
+              
+              card.innerHTML = `
+                <div class="ev-card-img-container">
+                  <input type="checkbox" class="compare-checkbox" ${isSelected ? 'checked' : ''} 
+                    onclick="event.stopPropagation();">
+                  <img src="${imageUrl}" alt="${ev.name}" class="ev-card-img" 
+                    onerror="this.onerror=null;this.src='/ev_imgs/logosev.png'">
+                  <span class="ev-card-badge ${categoryClass}">${categoryName}</span>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800">${ev.name}</h3>
+                ${ev.brand ? `<p class="text-sm text-gray-500">${ev.brand}</p>` : ''}
+                <p class="text-[#00dfc4] font-semibold mt-2">${formatCurrency(ev.price)}</p>
+                
+                <div class="feature-grid">
+                  <div class="feature-item">
+                    <span class="feature-label">Range</span>
+                    <span class="feature-value">${ev.range} km</span>
+                  </div>
+                  <div class="feature-item">
+                    <span class="feature-label">Top Speed</span>
+                    <span class="feature-value">${ev.topSpeed} km/h</span>
+                  </div>
+                  <div class="feature-item">
+                    <span class="feature-label">Charge Time</span>
+                    <span class="feature-value">${ev.chargingTime} hrs</span>
+                  </div>
+                  <div class="feature-item">
+                    <span class="feature-label">Warranty</span>
+                    <span class="feature-value">${ev.warranty} yrs</span>
+                  </div>
+                </div>
+                
+                <div class="action-buttons">
+                  <button class="btn btn-secondary view-details-btn">
+                    View Details
+                  </button>
+                  <button class="btn btn-primary compare-btn ${isSelected ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : ''}" 
+                    ${isSelected ? 'disabled' : ''}>
+                    ${isSelected ? 'Selected' : 'Compare'}
+                  </button>
+                </div>
+              `;
+
+              // Add event listeners
+              const viewDetailsBtn = card.querySelector('.view-details-btn');
+              viewDetailsBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                showVehicleDetails(ev);
+              });
+
+              const compareBtn = card.querySelector('.compare-btn');
+              compareBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleEVSelection(ev);
+              });
+
+              const checkbox = card.querySelector('.compare-checkbox');
+              checkbox.addEventListener('change', (e) => {
+                e.stopPropagation();
+                toggleEVSelection(ev);
+              });
+
+              // Make entire card clickable for details
+              card.addEventListener('click', () => {
+                showVehicleDetails(ev);
+              });
+
+              resultsGrid.appendChild(card);
+            });
+
+            renderPagination();
+          }
+
+          // Render comparison table
+          function renderComparison() {
+            comparisonBody.innerHTML = '';
+            compareHeaders.forEach((header, index) => {
+              if (selectedEVs[index]) {
+                header.textContent = selectedEVs[index].name;
+              } else {
+                header.textContent = '';
+              }
+            });
+
+            // Define comparison features
+            const features = [
+              { label: 'Brand', key: 'brand', format: (val) => val || 'N/A' },
+              { label: 'Category', key: 'category', format: formatCategory },
+              { label: 'Price', key: 'price', format: formatCurrency },
+              { label: 'Range', key: 'range', format: (val) => `${val} km`, compare: 'higher' },
+              { label: 'Top Speed', key: 'topSpeed', format: (val) => `${val} km/h`, compare: 'higher' },
+              { label: 'Battery Capacity', key: 'batteryCapacity', format: (val) => val ? `${val} kWh` : 'N/A' },
+              { label: 'Charge Time', key: 'chargingTime', format: (val) => `${val} hrs`, compare: 'lower' },
+              { label: 'Warranty', key: 'warranty', format: (val) => `${val} years`, compare: 'higher' },
+              { label: 'Seating Capacity', key: 'seatingCapacity', format: (val) => val || 'N/A' },
+              { label: 'Weight', key: 'weight', format: (val) => val ? `${val} kg` : 'N/A' }
+            ];
+
+            // Add rows for each feature
+            features.forEach(feature => {
+              const row = document.createElement('tr');
+              const featureCell = document.createElement('td');
+              featureCell.textContent = feature.label;
+              row.appendChild(featureCell);
+
+              // Find best value if comparison is needed
+              let bestIndex = -1;
+              if (feature.compare && selectedEVs.length > 1) {
+                const values = selectedEVs.map(ev => ev[feature.key]);
+                if (feature.compare === 'higher') {
+                  const max = Math.max(...values.filter(val => val !== undefined));
+                  bestIndex = values.indexOf(max);
+                } else if (feature.compare === 'lower') {
+                  const min = Math.min(...values.filter(val => val !== undefined));
+                  bestIndex = values.indexOf(min);
+                }
+              }
+
+              // Add cells for each selected EV
+              selectedEVs.forEach((ev, index) => {
+                const cell = document.createElement('td');
+                const value = ev[feature.key];
+                cell.textContent = feature.format(value);
+                
+                if (bestIndex === index) {
+                  cell.classList.add('winner-cell');
+                }
+                
+                row.appendChild(cell);
+              });
+
+              // Fill empty cells if less than 3 EVs selected
+              for (let i = selectedEVs.length; i < 3; i++) {
+                const cell = document.createElement('td');
+                cell.textContent = 'N/A';
+                row.appendChild(cell);
+              }
+
+              comparisonBody.appendChild(row);
+            });
+
+            // Scroll to comparison section
+            comparisonSection.scrollIntoView({ behavior: 'smooth' });
+          }
+
+          // Apply filters and render
+          async function applyFiltersAndRender() {
+            try {
+              showLoading();
+              let evs = allEVs;
+
+              // If we don't have EVs yet, fetch them
+              if (evs.length === 0) {
+                evs = await fetchEVs();
+              }
+
+              filteredEVs = filterEVs(evs);
+              const sortedEVs = sortEVs(filteredEVs);
+              filteredEVs = sortedEVs;
+              currentPage = 1; // Reset to first page when filters change
+              renderEVs(getPaginatedEVs());
+            } catch (error) {
+              console.error('Error applying filters:', error);
+            } finally {
+              hideLoading();
+            }
+          }
+
+          // Reset filters to show all data
+          function resetFilters() {
+            currentFilters = {
+              category: 'all',
+              minPrice: 50000,
+              maxPrice: 5000000,
+              range: 0,
+              topSpeed: 0,
+              warranty: 0,
+              searchQuery: ''
+            };
+
+            minPriceSlider.value = currentFilters.minPrice;
+            maxPriceSlider.value = currentFilters.maxPrice;
+            rangeSlider.value = currentFilters.range;
+            topSpeedSlider.value = currentFilters.topSpeed;
+            warrantySlider.value = currentFilters.warranty;
+            searchInput.value = '';
+
+            categoryButtons.forEach(btn => {
+              btn.classList.remove('active', 'bg-[#00dfc4]', 'text-white');
+              btn.classList.add('bg-gray-100', 'hover:bg-gray-200');
+            });
+
+            document.querySelector('.category-btn[data-category="all"]').classList.add('active', 'bg-[#00dfc4]', 'text-white');
+            document.querySelector('.category-btn[data-category="all"]').classList.remove('bg-gray-100', 'hover:bg-gray-200');
+
+            sortBy.value = 'price-asc';
+            currentSort = 'price-asc';
+
+            updateSliderValues();
+            applyFiltersAndRender();
+          }
+
+          // Initialize event listeners
+          function initEventListeners() {
+            // Filter controls
+            applyFiltersBtn.addEventListener('click', applyFiltersAndRender);
+            resetFiltersBtn.addEventListener('click', resetFilters);
+            resetNoResultsBtn.addEventListener('click', resetFilters);
+
+            // Sorting
+            sortBy.addEventListener('change', function () {
+              currentSort = this.value;
+              applyFiltersAndRender();
+            });
+
+            // Search input
+            searchInput.addEventListener('input', function () {
+              currentFilters.searchQuery = this.value.trim();
+              applyFiltersAndRender();
+            });
+
+            // Compare actions
+            compareSelectedBtn.addEventListener('click', renderComparison);
+
+            resetComparisonBtn.addEventListener('click', () => {
+              selectedEVs = [];
+              updateSelectedCount();
+              renderEVs(getPaginatedEVs());
+            });
+
+            // Popup controls
+            popupClose.addEventListener('click', closePopup);
+            popup.addEventListener('click', (e) => {
+              if (e.target === popup) {
+                closePopup();
+              }
+            });
+            document.addEventListener('keydown', (e) => {
+              if (e.key === 'Escape' && popup.classList.contains('active')) {
+                closePopup();
+              }
+            });
+          }
+
+          // Initialize everything
+          async function init() {
+            initSliders();
+            initCategoryButtons();
+            initEventListeners();
+
+            // Initial load of EVs
+            await fetchEVs();
+            applyFiltersAndRender();
+          }
+
+          init();
+        });
+      </script>
+</body>
+
+</html>

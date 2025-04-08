@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>About SelectEV - Your Smart EV Selection Assistant</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* About Page Specific Styles */
+    .about-hero {
+      background: linear-gradient(135deg, #00663d 0%, #223243 100%);
+      color: white;
+    }
+    
+    .section-title {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 60px;
+      height: 4px;
+      background: #00dfc4;
+      border-radius: 2px;
+    }
+    
+    .platform-card {
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    
+    .platform-card.animate {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .founder-card {
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      transition: all 0.4s ease;
+      background-color: white;
+    }
+    
+    .founder-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 25px 50px rgba(0, 223, 196, 0.15);
+    }
+    
+    .timeline-item {
+      opacity: 0;
+      transform: translateX(-30px);
+      transition: all 0.6s ease;
+    }
+    
+    .timeline-item.animate {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    
+    .timeline-item:nth-child(even) {
+      transform: translateX(30px);
+    }
+    
+    .timeline-item:nth-child(even).animate {
+      transform: translateX(0);
+    }
+    
+    .goal-card {
+      opacity: 0;
+      transform: scale(0.9);
+      transition: all 0.5s ease;
+      background-color: white;
+    }
+    
+    .goal-card.animate {
+      opacity: 1;
+      transform: scale(1);
+    }
+    
+    /* Text colors for light mode */
+    .text-primary {
+      color: #223243;
+    }
+    
+    .text-secondary {
+      color: #00663d;
+    }
+    
+    .text-accent {
+      color: #00dfc4;
+    }
+    
+    .text-gray {
+      color: #6b7280;
+    }
+    
+    .text-light {
+      color: #f3f4f6;
+    }
+    
+    /* Background colors for light mode */
+    .bg-primary {
+      background-color: #ffffff;
+    }
+    
+    .bg-secondary {
+      background-color: #f9fafb;
+    }
+    
+    .bg-accent {
+      background-color: #00dfc4;
+    }
+    
+    .bg-dark {
+      background-color: #223243;
+    }
+    
+    /* Dark mode overrides */
+    .dark-mode .about-hero {
+      background: linear-gradient(135deg, #003d2a 0%, #1a2433 100%);
+    }
+    
+    .dark-mode .text-primary {
+      color: #f3f4f6;
+    }
+    
+    .dark-mode .text-secondary {
+      color: #00dfc4;
+    }
+    
+    .dark-mode .text-gray {
+      color: #9ca3af;
+    }
+    
+    .dark-mode .bg-primary {
+      background-color: #1a2433;
+    }
+    
+    .dark-mode .bg-secondary {
+      background-color: #223243;
+    }
+    
+    .dark-mode .founder-card,
+    .dark-mode .goal-card {
+      background-color: #1a2433;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .dark-mode .timeline::before {
+      background: #2d3e52;
+    }
+    
+    .dark-mode .timeline-dot {
+      border-color: #00dfc4;
+    }
+    
+    /* Scroll animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .animate-fadeInUp {
+      animation: fadeInUp 1s ease-out forwards;
+    }
+    .cta-section {
+    padding: 4rem 1rem;
+    background: linear-gradient(to right, #00663d, #223243);
+  }
+
+  .cta-container {
+    max-width: 56rem;
+    margin: 0 auto;
+    text-align: center;
+    padding: 1.25rem;
+    color: white;
+  }
+
+  .cta-container h2 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+
+  .cta-container p {
+    font-size: 1.25rem;
+    opacity: 0.9;
+    margin-bottom: 2rem;
+    max-width: 42rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .cta-button {
+    display: inline-block;
+    background-color: #00dfc4;
+    color: #223243;
+    font-weight: 700;
+    padding: 0.75rem 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    font-size: 1.125rem;
+  }
+
+  .cta-button:hover {
+    background-color: #00bfa3;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+
+  @media (min-width: 768px) {
+    .cta-section {
+      padding: 6rem 1rem;
+    }
+    
+    .cta-container h2 {
+      font-size: 2.25rem;
+    }
+  }
+
+  </style>
+</head>
+<body class="font-['Poppins'] bg-secondary">
+  <%- include("../partials/header.ejs") %>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="about-hero py-20 md:py-32 p-8 mt-10 bg-primary">
+      <div class="max-w-6xl mx-auto text-center">
+        <h1 class="text-4xl md:text-6xl font-bold mb-6 animate-fadeInUp">About <span class="text-accent">SelectEV</span></h1>
+        <p class="text-xl md:text-2xl max-w-3xl mx-auto opacity-90 animate-fadeInUp" style="animation-delay: 0.2s">
+          Revolutionizing EV selection through intelligent technology and unbiased recommendations
+        </p>
+      </div>
+    </section>
+
+    <!-- Platform Introduction -->
+    <section class="py-16 md:py-24 px-4 bg-primary dark:bg-primary">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16 mt-12">
+          <h2 class="text-3xl md:text-4xl font-bold mb-4 section-title inline-block text-primary dark:text-primary">Our Platform</h2>
+          <p class="text-gray dark:text-gray max-w-2xl mx-auto mt-6">
+            SelectEV combines cutting-edge technology with deep automotive expertise to simplify your EV selection process
+          </p>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-8">
+          <!-- Platform Card 1 -->
+          <div class="platform-card bg-secondary dark:bg-secondary p-8 rounded-xl">
+            <div class="text-accent text-4xl mb-4">01</div>
+            <h3 class="text-xl font-semibold mb-3 text-primary dark:text-primary">Smart Matching Algorithm</h3>
+            <p class="text-gray dark:text-gray">
+              Our proprietary algorithm analyzes 50+ parameters to match you with the perfect EV based on your driving habits, budget, and needs.
+            </p>
+          </div>
+          
+          <!-- Platform Card 2 -->
+          <div class="platform-card bg-secondary dark:bg-secondary p-8 rounded-xl" style="transition-delay: 0.2s">
+            <div class="text-accent text-4xl mb-4">02</div>
+            <h3 class="text-xl font-semibold mb-3 text-primary dark:text-primary">Comprehensive Database</h3>
+            <p class="text-gray dark:text-gray">
+              We maintain the most up-to-date database of EVs in India, with detailed specs, real-world range tests, and owner reviews.
+            </p>
+          </div>
+          
+          <!-- Platform Card 3 -->
+          <div class="platform-card bg-secondary dark:bg-secondary p-8 rounded-xl" style="transition-delay: 0.4s">
+            <div class="text-accent text-4xl mb-4">03</div>
+            <h3 class="text-xl font-semibold mb-3 text-primary dark:text-primary">Unbiased Recommendations</h3>
+            <p class="text-gray dark:text-gray">
+              Unlike dealerships, we have no brand affiliations. Our recommendations are based solely on what's best for you.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Founder Section -->
+    <section class="py-16 md:py-24 px-4 bg-secondary dark:bg-secondary pb-8">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-bold mb-4 section-title inline-block text-primary dark:text-primary">Our Founder</h2>
+          <p class="text-gray dark:text-gray max-w-2xl mx-auto mt-6">
+            The vision behind SelectEV comes from years of experience in the EV industry
+          </p>
+        </div><br>
+        
+        <div class="flex flex-col md:flex-row items-center gap-12">
+          <div class="founder-card rounded-2xl overflow-hidden md:w-1/3">
+            <div class="p-8">
+              <h3 class="text-2xl font-bold text-primary dark:text-primary mb-1">Mayuresh D</h3>
+              <p class="text-accent font-medium mb-4">Founder & CEO</p>
+              <p class="text-gray dark:text-gray mb-6">
+                EV enthusiast with years of experience in automotive technology and sustainable mobility solutions.
+              </p>
+              <div class="flex space-x-4">
+                <a href="#" class="text-gray-400 hover:text-accent transition-colors">
+                  <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                  </svg>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-accent transition-colors">
+                  <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                  </svg>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-accent transition-colors">
+                  <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+          
+          <div class="md:w-2/3">
+            <h3 class="text-2xl md:text-3xl font-bold text-primary dark:text-primary mb-6">The Vision Behind SelectEV</h3>
+            <p class="text-gray dark:text-gray mb-6">
+              Mayuresh D founded SelectEV in 2022 after experiencing firsthand the challenges consumers face when switching to electric vehicles. With a background in electric vehicles and software development, he recognized the need for an intelligent platform that could cut through the marketing noise and provide personalized, data-driven recommendations.
+            </p>
+            <p class="text-gray dark:text-gray mb-6">
+              "Our mission is to accelerate India's transition to electric mobility by making it effortless for consumers to find the perfect EV for their needs," says Mayuresh. "The EV market is evolving rapidly, and buyers need a trusted advisor to navigate the options."
+            </p>
+            <div class="bg-accent bg-opacity-10 border-l-4 border-accent px-4 py-2 rounded-r">
+              <p class="text-primary dark:text-primary italic">
+                "SelectEV isn't just about choosing a vehicle - it's about empowering consumers with the knowledge they need to make confident decisions in the fast-changing world of electric mobility."
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Our Journey -->
+    <section class="py-16 md:py-24 px-4 bg-primary dark:bg-primary">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16 p-5">
+          <h2 class="text-3xl md:text-4xl font-bold mb-4 section-title inline-block text-primary dark:text-primary">Our Journey</h2>
+          <p class="text-gray dark:text-gray max-w-2xl mx-auto mt-6">
+            From concept to leading EV recommendation platform
+          </p>
+        </div>
+        
+        <div class="relative timeline">
+          <!-- Timeline connector -->
+          <div class="hidden md:block absolute left-1/2 h-full w-1 bg-gray-200 dark:bg-gray-700 transform -translate-x-1/2"></div>
+          
+          <!-- Timeline Item 1 -->
+          <div class="timeline-item mb-12 md:w-1/2 md:mb-16" style="transition-delay: 0.1s">
+            <div class="flex flex-col md:flex-row items-center">
+              <div class="md:w-1/2 md:pr-8 mb-4 md:mb-0 order-1 md:order-2">
+                <h3 class="text-xl font-bold text-primary dark:text-primary mb-2">Concept Born</h3>
+                <p class="text-gray dark:text-gray">
+                  Mayuresh identifies the need for unbiased EV recommendations while researching for EV purchase.
+                </p>
+              </div>
+              <div class="md:w-1/2 md:pl-8 order-2 md:order-1 text-right">
+                <div class="inline-block bg-accent text-white text-sm font-bold px-4 py-1 rounded-full mb-2">Jan 2022</div>
+                <div class="w-4 h-4 rounded-full border-4 border-accent bg-white dark:bg-dark mx-auto md:mx-0 md:ml-auto timeline-dot"></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Timeline Item 2 -->
+          <div class="timeline-item mb-12 md:w-1/2 md:ml-auto md:mb-16" style="transition-delay: 0.3s">
+            <div class="flex flex-col md:flex-row items-center">
+              <div class="md:w-1/2 md:pr-8 mb-4 md:mb-0">
+                <h3 class="text-xl font-bold text-primary dark:text-primary mb-2">Platform Development</h3>
+                <p class="text-gray dark:text-gray">
+                  Core algorithm developed and initial database of 150+ EVs created with detailed specifications.
+                </p>
+              </div>
+              <div class="md:w-1/2 md:pl-8">
+                <div class="inline-block bg-accent text-white text-sm font-bold px-4 py-1 rounded-full mb-2">Aug 2022</div>
+                <div class="w-4 h-4 rounded-full border-4 border-accent bg-white dark:bg-dark mx-auto md:mx-0 timeline-dot"></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Timeline Item 3 -->
+          <div class="timeline-item mb-12 md:w-1/2 md:mb-16" style="transition-delay: 0.5s">
+            <div class="flex flex-col md:flex-row items-center">
+              <div class="md:w-1/2 md:pr-8 mb-4 md:mb-0 order-1 md:order-2">
+                <h3 class="text-xl font-bold text-primary dark:text-primary mb-2">Beta Launch</h3>
+                <p class="text-gray dark:text-gray">
+                  SelectEV beta launched to 1,000 early users who helped refine the recommendation engine.
+                </p>
+              </div>
+              <div class="md:w-1/2 md:pl-8 order-2 md:order-1 text-right">
+                <div class="inline-block bg-accent text-white text-sm font-bold px-4 py-1 rounded-full mb-2">Mar 2023</div>
+                <div class="w-4 h-4 rounded-full border-4 border-accent bg-white dark:bg-dark mx-auto md:mx-0 md:ml-auto timeline-dot"></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Timeline Item 4 -->
+          <div class="timeline-item md:w-1/2 md:ml-auto" style="transition-delay: 0.7s">
+            <div class="flex flex-col md:flex-row items-center">
+              <div class="md:w-1/2 md:pr-8 mb-4 md:mb-0">
+                <h3 class="text-xl font-bold text-primary dark:text-primary mb-2">Public Launch</h3>
+                <p class="text-gray dark:text-gray">
+                  Full public launch with comparison tools, Station section, and personalized recommendations.
+                </p>
+              </div>
+              <div class="md:w-1/2 md:pl-8">
+                <div class="inline-block bg-accent text-white text-sm font-bold px-4 py-1 rounded-full mb-2">Apr 2025</div>
+                <div class="w-4 h-4 rounded-full border-4 border-accent bg-white dark:bg-dark mx-auto md:mx-0 timeline-dot"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Future Goals -->
+    <section class="py-16 md:py-24 px-4 bg-secondary dark:bg-secondary">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16 p-5">
+          <h2 class="text-3xl md:text-4xl font-bold mb-4 section-title inline-block text-primary dark:text-primary">Future Goals</h2>
+          <p class="text-gray dark:text-gray max-w-2xl mx-auto mt-6">
+            Where we're headed in the electric mobility revolution
+          </p>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-8 pb-8">
+          <!-- Goal 1 -->
+          <div class="goal-card p-8 rounded-xl shadow-sm" style="transition-delay: 0.1s">
+            <div class="text-accent text-3xl mb-4">Aug 2025</div>
+            <h3 class="text-xl font-semibold mb-3 text-primary dark:text-primary">Expand Vehicle Coverage</h3>
+            <p class="text-gray dark:text-gray">
+              Add 200+ new EV models including commercial vehicles and two-wheelers to our recommendation engine.
+            </p>
+          </div>
+          
+          <!-- Goal 2 -->
+          <div class="goal-card p-8 rounded-xl shadow-sm" style="transition-delay: 0.3s">
+            <div class="text-accent text-3xl mb-4">Dec 2025</div>
+            <h3 class="text-xl font-semibold mb-3 text-primary dark:text-primary">AI-Powered Predictions</h3>
+            <p class="text-gray dark:text-gray">
+              Implement machine learning to predict total cost of ownership and resale value for each EV recommendation.
+            </p>
+          </div>
+          
+          <!-- Goal 3 -->
+          <div class="goal-card p-8 rounded-xl shadow-sm" style="transition-delay: 0.5s">
+            <div class="text-accent text-3xl mb-4">Nov 2026</div>
+            <h3 class="text-xl font-semibold mb-3 text-primary dark:text-primary">Global Expansion</h3>
+            <p class="text-gray dark:text-gray">
+              Launch SelectEV in 5 new countries, adapting our platform to international EV markets and regulations.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+<!-- CTA Section with standard CSS -->
+<section class="cta-section">
+  <div class="cta-container">
+    <h2>Ready to Find Your Perfect EV?</h2>
+    <p>Join thousands of satisfied users who found their ideal electric vehicle with SelectEV.</p>
+    <a href="/ev-finder" class="cta-button">Start EV Finder</a>
+  </div>
+</section>
+</main>
+
+  <%- include("../partials/footer.ejs") %>
+
+  <script>
+    // Scroll animation functionality
+    function animateOnScroll() {
+      const platformCards = document.querySelectorAll('.platform-card');
+      const timelineItems = document.querySelectorAll('.timeline-item');
+      const goalCards = document.querySelectorAll('.goal-card');
+      
+      // Check if element is in viewport
+      function isInViewport(element) {
+        const rect = element.getBoundingClientRect();
+        return (
+          rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.75 &&
+          rect.bottom >= 0
+        );
+      }
+      
+      // Add animate class when in viewport
+      function checkElements() {
+        platformCards.forEach(card => {
+          if (isInViewport(card)) {
+            card.classList.add('animate');
+          }
+        });
+        
+        timelineItems.forEach(item => {
+          if (isInViewport(item)) {
+            item.classList.add('animate');
+          }
+        });
+        
+        goalCards.forEach(card => {
+          if (isInViewport(card)) {
+            card.classList.add('animate');
+          }
+        });
+      }
+      
+      // Initial check
+      checkElements();
+      
+      // Check on scroll
+      window.addEventListener('scroll', checkElements);
+    }
+    
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+      animateOnScroll();
+    });
+  </script>
+</body>
+</html>

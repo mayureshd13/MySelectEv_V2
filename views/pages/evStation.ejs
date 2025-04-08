@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Find Nearest EV Charging Station | SelectEV</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Condensed:wght@300;400;700&display=swap');
+
+    :root {
+      --primary: #00dfc4;
+      --secondary: #223243;
+      --accent: #e67e22;
+      --light: #f4f4f9;
+      --dark: #121212;
+      --text-light: #ffffff;
+      --text-dark: #333333;
+      --card-bg: #ffffff;
+      --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .dark-mode {
+      --primary: #00dfc4;
+      --secondary: #1a2433;
+      --accent: #ff8c42;
+      --light: #1e1e1e;
+      --dark: #0a0a0a;
+      --text-light: #f0f0f0;
+      --text-dark: #e0e0e0;
+      --card-bg: #223243;
+      --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    * {
+        box-sizing: border-box;
+        max-width: 100%;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--light);
+      color: var(--text-dark);
+      transition: all 0.3s ease;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    main {
+      padding: 2rem;
+      flex: 1;
+      max-width: 1400px;
+      width: 100%;
+      margin: 70px auto 0;
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .page-header h2 {
+      font-family: 'Roboto Condensed', sans-serif;
+      font-size: 2rem;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .page-header p {
+      color: var(--text-dark);
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .search-container {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 2rem;
+    }
+
+    .search-container h3 {
+      margin-top: 0;
+      color: var(--primary);
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    #search-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+
+    .form-group select,
+    .form-group input {
+      width: 90%;
+      padding: 0.8rem 1rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-family: 'Poppins', sans-serif;
+      background: var(--light);
+      color: var(--text-dark);
+      transition: all 0.3s ease;
+    }
+
+    .form-group select:focus,
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(0, 223, 196, 0.2);
+    }
+
+    .city-list {
+      position: absolute;
+      width:30%;
+      max-height: 200px;
+      overflow-y: auto;
+      background: var(--light);
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-top: 0.2rem;
+      z-index: 1001;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      display: none;
+    }
+
+    .city-option,
+    .suggestion-item {
+      padding: 0.8rem 1rem;
+      cursor: pointer;
+      color: var(--text-dark);
+      transition: background 0.2s ease;
+    }
+
+    .city-option:hover,
+    .suggestion-item:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .search-btn {
+      grid-column: span 2;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 1rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .search-btn:hover {
+      background: #00c7b0;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 223, 196, 0.3);
+    }
+
+    .results-container {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .station-list-container {
+      flex: 1;
+      max-width: 400px;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: var(--card-shadow);
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    .station-list-container h3 {
+      margin-top: 0;
+      color: var(--primary);
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    #station-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    #station-list li {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    #station-list li.empty-state {
+      text-align: center;
+      color: var(--text-dark);
+      opacity: 0.7;
+      cursor: default;
+    }
+
+    #station-list li:hover:not(.empty-state) {
+      background: rgba(0, 223, 196, 0.1);
+    }
+
+    #station-list li.active {
+      background: rgba(0, 223, 196, 0.2);
+      border-left: 3px solid var(--primary);
+    }
+
+    .station-name {
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 0.3rem;
+    }
+
+    .station-address {
+      font-size: 0.9rem;
+      color: var(--text-dark);
+      opacity: 0.8;
+      margin-bottom: 0.3rem;
+    }
+
+    .station-amenities {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .amenity-tag {
+      background: rgba(0, 223, 196, 0.2);
+      color: var(--primary);
+      padding: 0.2rem 0.5rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 500;
+    }
+
+    .map-container {
+      flex: 2;
+      height: 500px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+    }
+
+    #map {
+      height: 100%;
+      width: 100%;
+    }
+
+    .popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1001;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .popup.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .popup-content {
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 12px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+    }
+
+    .popup.active .popup-content {
+      transform: translateY(0);
+    }
+
+    #popupMessage {
+      margin-bottom: 1.5rem;
+      font-size: 1.1rem;
+      color: var(--text-dark);
+    }
+
+    #closePopup {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    #closePopup:hover {
+      background: #00c7b0;
+      transform: translateY(-2px);
+    }
+
+    .loader {
+      display: none;
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top: 4px solid var(--primary);
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 1rem auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Station Popup Styles */
+    .station-popup {
+      min-width: 220px;
+      font-family: 'Poppins', sans-serif;
+      padding: 10px;
+      padding-left: 14px;
+      background-color: white;
+      border-radius: 8px;
+    }
+    .station-popup h4 {
+      color: var(--primary);
+      margin: 2px 0 8px;
+      font-size: 16px;
+      padding: 2px;
+
+    }
+    .station-popup p {
+      margin: 0 0 12px;
+      font-size: 14px;
+      color: var(--text-dark);
+    }
+    .dark-mode .station-popup p{
+      color: black;
+    }
+    .popup-actions {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
+    .directions-btn {
+      display: inline-block;
+      background: var(--primary);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      border: none;
+      cursor: pointer;
+    }
+    .directions-btn:hover {
+      background: #00c7b0;
+      transform: translateY(-1px);
+    }
+    .directions-btn i {
+      margin-right: 5px;
+    }
+
+    /* Ensure popup is clickable */
+    .leaflet-popup-content-wrapper {
+      pointer-events: auto !important;
+      background: var(--card-bg) !important;
+      color: var(--text-dark) !important;
+    }
+    .leaflet-popup-content {
+      pointer-events: auto !important;
+      margin: 0 !important;
+    }
+    .leaflet-popup-tip-container {
+      pointer-events: none !important;
+    }
+    .leaflet-popup-close-button {
+      color: var(--text-dark) !important;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 1024px) {
+      #search-form {
+        grid-template-columns: 1fr;
+      }
+
+      .search-btn {
+        grid-column: span 1;
+      }
+
+      .results-container {
+        flex-direction: column;
+      }
+
+      .station-list-container {
+        max-width: 100%;
+      }
+
+      .map-container {
+        height: 400px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      main {
+        padding: 1rem;
+        margin-top: 60px;
+      }
+
+      .page-header h2 {
+        font-size: 1.5rem;
+      }
+
+      .map-container {
+        height: 300px;
+        width: 100%;
+        order: 1;
+        margin-bottom: 1rem;
+      }
+
+      .leaflet-container {
+        min-height: 300px;
+        min-width: 100%;
+      }
+      .search-container,
+      .station-list-container {
+        padding: 1rem;
+      }
+
+      .station-list-container {
+        order: 2;
+        max-height: 300px;
+      }
+
+      .form-group select,
+      .form-group input {
+        width: 100% !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .page-header h2 {
+        font-size: 1.3rem;
+      }
+
+      .form-group select,
+      .form-group input {
+        padding: 0.7rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <%-include("../partials/header.ejs") %>
+  
+  <main>
+    <div class="page-header">
+      <h2><i class="fas fa-charging-station"></i> Find EV Charging Stations</h2>
+      <p>Locate the nearest charging stations for your electric vehicle. Search by state and city to find available stations with detailed information.</p>
+    </div>
+
+    <div class="search-container">
+      <h3><i class="fas fa-search"></i> Search Stations</h3>
+      <form id="search-form">
+        <div class="form-group">
+          <label for="state">State</label>
+          <select id="state" required>
+            <option value="">Select State</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="city">City</label>
+          <input type="text" id="city" placeholder="Enter city name" autocomplete="off" required>
+          <div id="city-list" class="city-list"></div>
+        </div>
+        <button type="submit" class="search-btn">
+          <i class="fas fa-search-location"></i> Find Stations
+        </button>
+      </form>
+      <div class="loader" id="loader"></div>
+    </div>
+
+    <div class="results-container">
+      <div class="station-list-container">
+        <h3><i class="fas fa-list"></i> Station List</h3>
+        <ul id="station-list">
+          <li class="empty-state">
+            Search for stations by selecting a state and city
+          </li>
+        </ul>
+      </div>
+      <div class="map-container">
+        <div id="map"></div>
+      </div>
+    </div>
+  </main>
+
+  <div id="customPopup" class="popup">
+    <div class="popup-content">
+      <p id="popupMessage"></p>
+      <button id="closePopup">OK</button>
+    </div>
+  </div>
+
+  <%-include("../partials/footer.ejs") %>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+  <script>
+    // DOM Elements
+    const searchForm = document.getElementById('search-form');
+    const stateSelect = document.getElementById('state');
+    const cityInput = document.getElementById('city');
+    const cityList = document.getElementById('city-list');
+    const stationList = document.getElementById('station-list');
+    const loader = document.getElementById('loader');
+    const popup = document.getElementById('customPopup');
+    const popupMessage = document.getElementById('popupMessage');
+    const closePopup = document.getElementById('closePopup');
+    
+    // State and city data
+    let stateData = [];
+    let stationsData = [];
+    let currentMarker = null;
+    let map;
+    let markers = [];
+    let markerGroup = L.layerGroup();
+    
+    // Initialize map with mobile optimizations
+    function initMap() {
+      map = L.map('map', {
+        tap: false,
+        dragging: !L.Browser.mobile,
+        tapTolerance: 15,
+        zoomControl: false,
+        preferCanvas: true
+      }).setView([20.5937, 78.9629], 5);
+
+      L.control.zoom({
+        position: 'bottomright'
+      }).addTo(map);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 18,
+        minZoom: 3
+      }).addTo(map);
+
+      // Mobile-specific fixes
+      if (L.Browser.mobile) {
+        const handleResize = () => {
+          setTimeout(() => {
+            map.invalidateSize();
+            setTimeout(() => map.invalidateSize(), 100);
+          }, 200);
+        };
+        
+        window.addEventListener('orientationchange', handleResize);
+        window.addEventListener('resize', handleResize);
+      }
+
+      // Add marker group to map once
+      markerGroup.addTo(map);
+
+      // Initial resize fix
+      setTimeout(() => {
+        map.invalidateSize();
+        setTimeout(() => {
+          map.invalidateSize();
+          if (L.Browser.mobile) {
+            map.setZoom(map.getZoom() - 1);
+          }
+        }, 100);
+      }, 500);
+    }
+    
+    // Marker icons
+    const stationIcon = L.icon({
+      iconUrl: 'https://cdn-icons-png.flaticon.com/512/2776/2776000.png',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    });
+    
+    const highlightIcon = L.icon({
+      iconUrl: 'https://cdn-icons-png.flaticon.com/512/2776/2776032.png',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    });
+
+    // Get directions with user's current location if available
+    function getDirections(lat, lng) {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            // User allowed location sharing
+            const userLat = position.coords.latitude;
+            const userLng = position.coords.longitude;
+            window.open(
+              `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${lat},${lng}&travelmode=driving`,
+              '_blank'
+            );
+          },
+          (error) => {
+            // Fallback without user location
+            window.open(
+              `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,
+              '_blank'
+            );
+          }
+        );
+      } else {
+        // Geolocation not supported
+        window.open(
+          `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,
+          '_blank'
+        );
+      }
+    }
+    
+    // Fetch states data with caching
+    async function fetchStates() {
+      try {
+        showLoader();
+        const cacheKey = 'statesData';
+        const cachedData = localStorage.getItem(cacheKey);
+        
+        if (cachedData) {
+          stateData = JSON.parse(cachedData);
+          populateStateDropdown();
+          hideLoader();
+          return;
+      }
+  
+        const response = await fetch('http://localhost:8080/states');
+        if (response.ok) {
+          stateData = await response.json();
+          localStorage.setItem(cacheKey, JSON.stringify(stateData));
+          populateStateDropdown();
+        } else {
+          showPopup('Failed to load location data. Please try again later.');
+        }
+      } catch (error) {
+        console.error('Error fetching states:', error);
+        showPopup('An error occurred while loading location data.');
+      } finally {
+        hideLoader();
+      }
+    }
+    
+    // Populate state dropdown with debounced search
+    function populateStateDropdown() {
+      stateSelect.innerHTML = '<option value="">Select State</option>';
+      const sortedStates = [...stateData].sort((a, b) => a.name.localeCompare(b.name));
+      
+      sortedStates.forEach(state => {
+        const option = document.createElement('option');
+        option.value = state.name;
+        option.textContent = state.name;
+        stateSelect.appendChild(option);
+      });
+    }
+    
+    // Populate cities with debounced search
+    function populateCities(stateName) {
+      cityList.innerHTML = '';
+      cityInput.value = '';
+      
+      const state = stateData.find(s => s.name === stateName);
+      if (!state || !state.cities) return;
+    
+      let searchTimeout;
+      const cities = [...state.cities].sort((a, b) => a.localeCompare(b));
+      
+      cityInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          const searchTerm = this.value.toLowerCase();
+          const filteredCities = cities.filter(city => 
+            city.toLowerCase().includes(searchTerm)
+          );
+          displayCities(filteredCities);
+        }, 300);
+      });
+      
+      displayCities(cities);
+    }
+    
+    // Display cities in dropdown
+    function displayCities(cities) {
+      cityList.innerHTML = '';
+      
+      if (cities.length === 0) {
+        const noResults = document.createElement('div');
+        noResults.className = 'suggestion-item';
+        noResults.textContent = 'No matching cities found';
+        cityList.appendChild(noResults);
+      } else {
+        cities.slice(0, 100).forEach(city => {
+          const item = document.createElement('div');
+          item.className = 'suggestion-item';
+          item.textContent = city;
+          item.addEventListener('click', () => {
+            cityInput.value = city;
+            cityList.style.display = 'none';
+          });
+          cityList.appendChild(item);
+        });
+      }
+      
+      cityList.style.display = cities.length > 0 ? 'block' : 'none';
+    }
+    
+    // Fetch charging stations with caching
+    async function fetchStations(state, city) {
+      try {
+        showLoader();
+        const cacheKey = `stations_${state}_${city}`;
+        const cachedData = localStorage.getItem(cacheKey);
+        
+        if (cachedData) {
+          stationsData = JSON.parse(cachedData);
+          processStations(state, city);
+          return;
+        }
+    
+        const response = await fetch('http://localhost:8080/stations');
+        if (!response.ok) throw new Error('Network response was not ok');
+        
+        stationsData = await response.json();
+        localStorage.setItem(cacheKey, JSON.stringify(stationsData));
+        processStations(state, city);
+      } catch (error) {
+        console.error('Error fetching stations:', error);
+        showPopup('An error occurred while fetching station data.');
+        clearStations();
+      } finally {
+        hideLoader();
+        setTimeout(() => map.invalidateSize(), 100);
+      }
+    }
+    
+    function processStations(state, city) {
+      const filteredStations = stationsData.filter(station =>
+        station.state.toLowerCase() === state.toLowerCase() &&
+        station.city.toLowerCase() === city.toLowerCase()
+      );
+      
+      if (filteredStations.length > 0) {
+        displayStations(filteredStations);
+      } else {
+        showPopup('No charging stations found in the selected city.');
+        clearStations();
+      }
+    }
+    
+    // Display stations with optimized popups
+    function displayStations(stations) {
+      clearMarkers();
+      stationList.innerHTML = '';
+
+      // Filter valid stations
+      const validStations = stations.filter(station => 
+        station.latitude && station.longitude && 
+        !isNaN(station.latitude) && !isNaN(station.longitude)
+      );
+
+      if (!validStations.length) {
+        stationList.innerHTML = '<li class="empty-state">No valid stations found</li>';
+        return;
+      }
+
+      const firstStation = validStations[0];
+      const zoomLevel = L.Browser.mobile ? 12 : 13;
+
+      // Clear existing markers
+      markerGroup.clearLayers();
+      markers = [];
+
+      validStations.forEach((station) => {
+        const marker = L.marker([station.latitude, station.longitude], {
+          icon: stationIcon
+        });
+
+        // Create popup content
+        const popupContent = document.createElement('div');
+        popupContent.className = 'station-popup';
+        popupContent.innerHTML = `
+          <h4>${station.name || 'Charging Station'}</h4>
+          <p>${station.address || 'Location details not available'}</p>
+          <div class="popup-actions">
+            <button class="directions-btn" data-lat="${station.latitude}" data-lng="${station.longitude}">
+              <i class="fas fa-directions"></i> Get Directions
+            </button>
+          </div>
+        `;
+
+        // Create popup with custom options
+        const popup = L.popup({
+          className: 'custom-popup',
+          closeOnClick: false,
+          maxWidth: 300
+        }).setContent(popupContent);
+
+        marker.bindPopup(popup);
+        markerGroup.addLayer(marker);
+        markers.push(marker);
+
+        // Add click handler for directions button
+        marker.on('popupopen', function() {
+          const btn = document.querySelector('.leaflet-popup-content .directions-btn');
+          if (btn) {
+            btn.onclick = (e) => {
+              e.stopPropagation();
+              const lat = btn.dataset.lat;
+              const lng = btn.dataset.lng;
+              getDirections(lat, lng);
+            };
+          }
+        });
+
+        // Create list item
+        const listItem = document.createElement('li');
+        listItem.innerHTML = `
+          <div class="station-name">${station.name || 'Charging Station'}</div>
+          <div class="station-address">${station.address || ''}</div>
+          ${station.amenities ? `
+            <div class="station-amenities">
+              ${station.amenities.map(a => `<span class="amenity-tag">${a}</span>`).join('')}
+            </div>
+          ` : ''}
+        `;
+
+        listItem.addEventListener('click', () => {
+          // Highlight selected station
+          document.querySelectorAll('#station-list li').forEach(li => {
+            li.classList.remove('active');
+          });
+          listItem.classList.add('active');
+          
+          // Center map and open popup
+          map.setView([station.latitude, station.longitude], 15);
+          marker.openPopup();
+          
+          // Change marker icon to highlight
+          if (currentMarker) {
+            currentMarker.setIcon(stationIcon);
+          }
+          marker.setIcon(highlightIcon);
+          currentMarker = marker;
+        });
+        
+        stationList.appendChild(listItem);
+      });
+
+      // Center map on first station
+      if (validStations.length) {
+        map.setView(
+          [firstStation.latitude, firstStation.longitude], 
+          zoomLevel
+        );
+      }
+    }
+    
+    // Clear all markers from map
+    function clearMarkers() {
+      markerGroup.clearLayers();
+      markers = [];
+      currentMarker = null;
+    }
+    
+    // Clear station list
+    function clearStations() {
+      stationList.innerHTML = '<li class="empty-state">No stations found</li>';
+      clearMarkers();
+      map.setView([20.5937, 78.9629], 5);
+    }
+    
+    // Show loading spinner with timeout
+    function showLoader() {
+      loader.style.display = 'block';
+      setTimeout(() => {
+        if (loader.style.display === 'block') {
+          loader.innerHTML = 'Still loading...';
+        }
+      }, 5000);
+    }
+    
+    // Hide loading spinner
+    function hideLoader() {
+      loader.style.display = 'none';
+      loader.innerHTML = '';
+    }
+    
+    // Show popup message with auto-hide
+    function showPopup(message) {
+      popupMessage.textContent = message;
+      popup.classList.add('active');
+      setTimeout(() => popup.classList.remove('active'), 3000);
+    }
+    
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      initMap();
+      fetchStates();
+    });
+    
+    closePopup.addEventListener('click', () => popup.classList.remove('active'));
+    
+    stateSelect.addEventListener('change', function() {
+      if (this.value) {
+        populateCities(this.value);
+      } else {
+        cityList.style.display = 'none';
+      }
+    });
+    
+    cityInput.addEventListener('focus', function() {
+      if (stateSelect.value) {
+        cityList.style.display = 'block';
+      }
+    });
+    
+    document.addEventListener('click', (e) => {
+      if (e.target !== cityInput) {
+        cityList.style.display = 'none';
+      }
+    });
+    
+    searchForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const state = stateSelect.value.trim();
+      const city = cityInput.value.trim();
+      
+      if (state && city) {
+        fetchStations(state, city);
+      } else {
+        showPopup('Please select a state and enter a city.');
+      }
+    });
+  </script>
+</body>
+</html>
