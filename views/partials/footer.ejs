@@ -49,5 +49,25 @@
         <p>&copy; 2025 MySelectEV. All rights reserved.</p>
       </div>
     </div>
+    
+    <!-- Mobile Navigation Bar -->
+    <div class="mobile-nav-bar">
+      <a href="/" class="<%= currentPage === 'home' ? 'active' : '' %>">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </a>
+      <a href="/ev-finder" class="<%= currentPage === 'evs' ? 'active' : '' %>">
+        <i class="fas fa-car"></i>
+        <span>EVs</span>
+      </a>
+      <a href="/find-stations" class="<%= currentPage === 'stations' ? 'active' : '' %>">
+        <i class="fas fa-charging-station"></i>
+        <span>Stations</span>
+      </a>
+      <a href="/about-us" class="<%= currentPage === 'about' ? 'active' : '' %>">
+        <i class="fas fa-info-circle"></i>
+        <span>About</span>
+      </a>
+    </div>
   </footer>
-  </html>
+</html>
